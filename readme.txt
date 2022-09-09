@@ -18,9 +18,9 @@ Create banners to bring traffic to your site.
 
 1. Activate the plugin
 2.
-3. 
+3.
 
 == Changelog ==
 
-= 1.0: March 8, 2018 =
+= 1.0: September 9, 2022 =
 * WP Banners is born. This is a first beta release.
