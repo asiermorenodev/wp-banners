@@ -1,0 +1,218 @@
+@font-face {
+	font-family: 'quicksand';
+	font-display: swap;
+	src: url('https://recyclingrules.org/wp-content/themes/recycling-rules-subsites/fonts/Quicksand-VariableFont_wght.woff') format('woff');
+}
+
+@font-face {
+	font-family: 'quicksand-bold';
+	font-display: swap;
+	src: url('https://recyclingrules.org/wp-content/themes/recycling-rules-subsites/fonts/Quicksand-Bold.woff') format('woff');
+}
+
+/************* V1 **************/
+
+#rr-banner-container.v1 {
+	font-family: 'quicksand';
+	padding: 20px;
+	margin: 10px 0;
+	background-image: linear-gradient(rgba(255,255,255,.8), rgba(255,255,255,.8)), url(https://recyclingrules.org/wp-content/uploads/sites/160/map-image/map-image-desktop-604b82f80025b.jpeg);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-color: #f2f2f2;
+	background-size: cover;
+	width: 600px;
+	border-radius: 10px;
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.rr-banner-text.v1 {
+	margin-bottom: 30px;
+}
+
+.rr-banner-text.v1 h3 {
+	font-family: 'quicksand-bold';
+}
+
+.rr-banner-cta.v1 a {
+	font-family: 'quicksand-bold';
+	text-decoration: none;
+	color: #ffffff;
+	background-color: #7FBF42;
+	padding: 5px 20px;
+	border-radius: 20px;
+}
+
+.rr-banner-logo.v1 {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 20px;
+}
+
+.rr-banner-logo.v1 img {
+	width: 33%;
+}
+
+/************* V2 **************/
+
+#rr-banner-container.v2 {
+	font-family: 'quicksand';
+	padding: 20px;
+	margin: 10px 0;
+	background-color: #3E6691;
+	color: #ffffff;
+	width: 800px;
+	border-radius: 10px;
+	display: flex;
+	align-items: center;
+}
+
+.rr-banner-text.v2 {
+	width: 60%;
+}
+
+.rr-banner-cta.v2 {
+	width: 40%;
+	text-align: center;
+}
+
+.rr-banner-cta.v2 a {
+	font-family: 'quicksand-bold';
+	text-decoration: none;
+	color: #3E6691;
+	background-color: #ffffff;
+	padding: 5px 20px;
+	border-radius: 20px;
+}
+
+/************* V3 **************/
+
+#rr-banner-container.v3 {
+	font-family: 'quicksand';
+	padding: 0;
+	margin: 10px 0;
+	width: 800px;
+	border-radius: 10px;
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+	display: flex;
+	color: #2A3747;
+}
+
+.v3 .rr-1-2,
+.v3 .rr-2-2 {
+	width: 50%;
+	padding: 40px 30px;
+}
+
+.v3 .rr-1-2 {
+	background-color: #ffffff;
+	border-radius: 10px 0 0 10px;
+	margin-bottom: 40px;
+}
+
+.v3 .rr-2-2 {
+	background-color: #F4F4F4;
+	border-radius: 0 10px 10px 0;
+}
+
+.v3 .rr-banner-logo {
+	margin-bottom: 30px;
+}
+
+.v3 .rr-banner-logo img {
+	width: 60%;
+}
+
+.v3 .rr-banner-text {
+	margin-bottom: 50px;
+}
+
+.v3 .rr-banner-text h3 {
+	font-family: quicksand-bold;
+	font-size: 20px;
+	line-height: 35px;
+}
+
+.v3 .rr-banner-cta a {
+	font-family: 'quicksand-bold';
+	text-decoration: none;
+	color: #ffffff;
+	background-color: #7FBF42;
+	padding: 5px 20px;
+	border-radius: 20px;
+}
+
+.v3 ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	height: 100%;
+}
+
+.v3 li {
+	padding: 0;
+	margin: 0;
+}
+.v3 li a,
+.v3 li a:link,
+.v3 li a:hover,
+.v3 li a:focus,
+.v3 li a:active,
+.v3 li a:visited {
+	color: #2A3747;
+}
+
+.v3 li a {
+	display: inline-block;
+	padding: 10px;
+	width: max-content;
+	width: -webkit-fill-available;
+	width: -moz-max-content;
+	background-color: #ffffff;
+	text-decoration: none;
+	font-family: quicksand-bold;
+	box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+	border-radius: 6px;
+}
+
+.v3 li a span {
+	margin-left: 10px;
+}
+
+.v3 li a:before {
+	content: '';
+	background-repeat: no-repeat;
+	display: inline-block;
+	vertical-align: middle;
+	width: 35px;
+	height: 23px;
+	background-position: center;
+}
+
+.v3 li.rr-recycling-guide a:before {
+	background-size: 27px;
+	background-image: url("https://recyclingrules.org/wp-content/themes/recycling-rules-subsites/images/icons/Home-Step_1_Icon.png");
+}
+
+.v3 li.rr-recycling-center a:before {
+	background-size: 23px;
+	background-image: url("https://recyclingrules.org/wp-content/themes/recycling-rules-subsites/images/icons/Home-Step_2_Icon-v2.png");
+}
+
+.v3 li.rr-where a:before {
+	background-size: 15px;
+	background-image: url("https://recyclingrules.org/wp-content/themes/recycling-rules-subsites/images/icons/Home-Step_3_Icon-v1.png");
+}
+
+.v3 li.rr-recycling-economics a:before {
+	background-size: 23px;
+	background-image: url("https://recyclingrules.org/wp-content/themes/recycling-rules-subsites/images/icons/Home-Step_4_Icon.png");
+}
+
+.v3 li.rr-disposal-dictionary a:before {
+	background-size: 23px;
+	background-image: url("https://recyclingrules.org/wp-content/themes/recycling-rules-subsites/images/icons/Home-Step_6_Icon.png");
+}
