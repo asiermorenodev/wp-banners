@@ -14,7 +14,7 @@ class rrBanner {
             this.siteId = urlParams.get('site-id');
         }
 
-        if (urlParams.has('version')) {
+        if (urlParams.has('banner-id')) {
             let version = urlParams.get('version');
 
             if ( version === '1' || version === '2' || version === '3' ) {
@@ -22,10 +22,12 @@ class rrBanner {
             }
         }
 
+        let url = 'http://ammulsubdomdev.local';
+
         /*********************************************************/
 
         let request    = new XMLHttpRequest(),
-            endpoint   = 'https://recyclingrules.org/wp-json/rr/v1/banner/',
+            endpoint   = url + '/wp-json/rr/v1/wp-banner/',
             requestURL = endpoint + '?site-id=' + this.siteId + '&version=' + this.version + '&t=' + Date.now();
 
         request.open('GET', requestURL);

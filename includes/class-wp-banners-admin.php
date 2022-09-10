@@ -34,7 +34,12 @@ class WPB_Admin extends WPB_Core {
 
     private function define_constants() {
         self::define( 'WP_BANNERS_SETTINGS_PAGE_SLUG', 'wp-banners-settings' );
-        self::define( 'WP_BANNERS_OPTION_BLOGS_CAN_CREATE_BANNERS', 'wp_banners_option_blogs_can_create_banners' );
+        self::define( 'WP_BANNERS_OPTION_SUBSITES_CAN_CREATE_BANNERS', 'wp_banners_option_subsites_can_create_banners' );
+
+        self::define( 'WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES', '_wp_banner_is_available_on_subsites' );
+
+        self::define( 'WP_BANNERS_VALUE_YES', 'yes' );
+        self::define( 'WP_BANNERS_VALUE_NO', 'no' );
     }
 
     public function run() {
@@ -50,17 +55,26 @@ class WPB_Admin extends WPB_Core {
      */
     public function register_hooks() {
         if ( is_multisite() ) {
+            $is_main_site             = is_main_site();
+            $can_blogs_create_banners = get_site_option( WP_BANNERS_OPTION_SUBSITES_CAN_CREATE_BANNERS );
 
-            //TODO
-            $can_blogs_create_banners = get_site_option( WP_BANNERS_OPTION_BLOGS_CAN_CREATE_BANNERS );
-
-            if ( is_main_site() || $can_blogs_create_banners ) {
-                add_action( 'init', array( $this, 'banner_post_type' ), 0 );
+            if ( $is_main_site || $can_blogs_create_banners ) {
                 add_action( 'admin_menu', array( $this, 'add_banner_post_type_settings_submenu' ) );
+            }
+
+            if ( $is_main_site ) {
+                add_action( 'admin_init', array( $this, 'register_main_site_banner_meta_boxes' ) );
+                add_action( 'save_post', array( $this, 'save_main_site_banner_meta_boxes' ) );
+                add_filter( 'manage_wp_banner_posts_columns', array( $this, 'set_main_site_banner_columns' ) );
+                add_action( 'manage_wp_banner_posts_custom_column' , array( $this, 'set_main_site_banner_columns_content' ), 10, 2 );
+                add_filter( 'manage_edit-wp_banner_sortable_columns', array( $this, 'set_main_site_banner_sortable_columns' ) );
+                add_action( 'pre_get_posts', array( $this, 'set_main_site_wp_banner_custom_orderby' ) );
             }
         } else {
             add_action ( 'admin_menu', array( $this, 'add_banner_post_type_settings_submenu' ) );
         }
+
+        add_action( 'init', array( $this, 'register_banner_post_type' ) );
     }
 
     public function add_banner_post_type_settings_submenu() {
@@ -83,7 +97,7 @@ class WPB_Admin extends WPB_Core {
 
 
     // Register Custom Post Type
-    public function banner_post_type() {
+    public function register_banner_post_type() {
         $labels = array(
             'name'                  => _x( 'Banners', 'Post Type General Name', 'wp_banners' ),
             'singular_name'         => _x( 'Banner', 'Post Type Singular Name', 'wp_banners' ),
@@ -128,21 +142,129 @@ class WPB_Admin extends WPB_Core {
             'labels'                => $labels,
             'supports'              => array( 'title', 'editor' ),
             'hierarchical'          => false,
-            'public'                => true,
+            'public'                => false,
             'show_ui'               => true,
             'show_in_menu'          => true,
             'menu_position'         => apply_filters( 'wp_banners_admin_menu_position', 70 ),
             'menu_icon'             => 'dashicons-flag',
             'show_in_admin_bar'     => false,
-            'show_in_nav_menus'     => true,
+            'show_in_nav_menus'     => false,
             'can_export'            => true,
             'has_archive'           => false,
             'exclude_from_search'   => true,
-            'publicly_queryable'    => true,
+            'publicly_queryable'    => false,
             'rewrite'               => false,
             'capabilities'          => $capabilities,
             'show_in_rest'          => false,
         );
         register_post_type( 'wp_banner', $args );
+    }
+
+    public function register_main_site_banner_meta_boxes() {
+        add_meta_box(
+            'wp_banner_metadata_available_on_blogs',
+            'Availability on subsites',
+            array( $this, 'render_banner_available_on_subsites_meta_box' ),
+            'wp_banner',
+            'normal',
+            'core'
+        );
+    }
+
+    public function render_banner_available_on_subsites_meta_box() {
+        global $post;
+        $banner = get_post_custom( $post->ID );
+
+        if ( isset( $banner[ WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES ] ) && isset( $banner[ WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES ][0] )  ) {
+            $value = $banner[ WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES ][0];
+        } else {
+            $value = WP_BANNERS_VALUE_YES;
+        }
+
+        ?>
+        <p><?php _e( 'Should this banner be available on the subsites of this network?', 'wp_banner' ) ?></p>
+        <div>
+            <input type="radio"
+                   id="wp_banner_available_on_subsites_yes"
+                   name="<?php echo WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES ?>"
+                   value="<?php echo WP_BANNERS_VALUE_YES ?>"
+                   <?php checked( $value, WP_BANNERS_VALUE_YES ) ?>
+            />
+            <label for="wp_banner_available_on_subsites_yes"><?php _e( 'Yes', 'wp_banner' ) ?></label>
+        </div>
+        <div>
+            <input type="radio"
+                   id="wp_banner_available_on_subsites_no"
+                   name="<?php echo WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES ?>"
+                   value="<?php echo WP_BANNERS_VALUE_NO ?>"
+                   <?php checked( $value, WP_BANNERS_VALUE_NO ) ?>
+            />
+            <label for="wp_banner_available_on_subsites_no"><?php _e( 'No', 'wp_banner' ) ?></label>
+        </div>
+        <?php
+    }
+
+    public function save_main_site_banner_meta_boxes() {
+        global $post;
+
+        if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+            return;
+        }
+
+        if ( get_post_status( $post->ID ) === 'auto-draft' ) {
+            return;
+        }
+
+        $sanitized_value = sanitize_text_field( $_POST[ WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES ] );
+
+        update_post_meta( $post->ID, WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES, $sanitized_value );
+    }
+
+    public function set_main_site_banner_columns( $columns ) {
+
+        // Add the availability column after the title.
+        $new_columns = array(
+            'cb'                                         => $columns['cb'],
+            'title'                                      => $columns['title'],
+            WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES => __( 'Available on subsites', 'wp_banner' )
+        );
+
+        // We want to keep the columns that other plugins may have added.
+        // So let's unset the ones we've already added and merge the rest.
+        unset( $columns['cb'] );
+        unset( $columns['title'] );
+
+        return array_merge( $new_columns, $columns );
+    }
+
+    public function set_main_site_banner_columns_content( $column, $post_id ) {
+        switch ( $column ) {
+            case WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES :
+                $is_available = get_post_meta( $post_id , WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES , true );
+
+                if ( WP_BANNERS_VALUE_YES === $is_available ) {
+                    echo __( 'Yes', 'wp_banner');
+                } elseif ( WP_BANNERS_VALUE_NO === $is_available ) {
+                    echo __( 'No', 'wp_banner');
+                } else {
+                    echo __( '--', 'wp_banner');
+                }
+                break;
+        }
+    }
+
+    public function set_main_site_banner_sortable_columns( $columns ) {
+        $columns[ WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES ] = WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES;
+        return $columns;
+    }
+
+    public function set_main_site_wp_banner_custom_orderby( $query ) {
+
+        $orderby = $query->get( 'orderby' );
+
+        if ( WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES === $orderby ) {
+            $query->set( 'meta_key', WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES );
+            $query->set( 'orderby', 'meta_value' );
+        }
     }
 }

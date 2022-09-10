@@ -10,7 +10,6 @@ namespace WP_Banners;
 class WPB_Public extends WPB_Core {
 
     public function __construct() {
-        error_log('WPB_Public: __construct');
         parent::__construct();
     }
 
@@ -27,8 +26,7 @@ class WPB_Public extends WPB_Core {
     }
 
     public function register_rest_route() {
-        error_log('WPB_Public: register_rest_route');
-        register_rest_route( 'rr/v1', '/banner/',
+        register_rest_route( 'rr/v1', '/wp-banner/',
             array(
                 'methods' => 'GET',
                 'callback' => array( $this, 'get_banner_data' ),
@@ -37,14 +35,13 @@ class WPB_Public extends WPB_Core {
     }
 
     public function get_banner_data( \WP_REST_Request $request ){
-        error_log('WPB_Public: get_banner_data');
         // TODO Sanitize and check errors.
 
         $site_id = $request->get_param( 'site-id' );
-        $version = $request->get_param( 'version' );
+        $banner_id = $request->get_param( 'banner-id' );
 
-        if ( ! isset( $version ) || ('2' !== $version && '3' !== $version ) ) {
-            $version = '1';
+        if ( ! isset( $banner_id ) ) {
+            $banner_id = '5'; //TODO
         }
 
         $site = get_site( $site_id );
@@ -79,13 +76,32 @@ class WPB_Public extends WPB_Core {
                     'as'   => 'font',
                 ),
             ),
-            'html' => $this->get_banner_HTML($site_id, $version),
+            'html' => $this->get_banner_HTML( $banner_id, $site_id),
         );
         return $data;
     }
 
-    private function get_banner_HTML($site_id, $version = '1') {
-        error_log('WPB_Public: get_banner_HTML');
+    private function get_banner_HTML( $id, $site_id ) {
+
+        // https://www.mugo.ca/Blog/Adding-complex-fields-to-WordPress-custom-post-types
+
+        $wp_banner = get_post( $id );
+
+        if ( isset ( $wp_banner ) ) {
+            return $wp_banner->post_content;
+        } else {
+            ob_start();
+            ?>
+            <p>Banner not found</p>
+            <?php
+            return ob_get_clean();
+        }
+
+
+        /***************/
+
+
+
         $site = get_site( $site_id );
 
         switch_to_blog( $site_id );
