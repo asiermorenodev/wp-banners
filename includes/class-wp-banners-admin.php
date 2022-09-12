@@ -264,7 +264,7 @@ class WPB_Admin extends WPB_Core {
 
         if ( WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES === $orderby ) {
             $query->set( 'meta_key', WP_BANNERS_META_KEY_IS_AVAILABLE_ON_SUBSITES );
-            $query->set( 'orderby', 'meta_value' );
+            $query->set( 'orderby', 'meta_value' ); // For numeric values use meta_value_num.
         }
     }
 }
