@@ -1,40 +1,22 @@
 class rrBanner {
     constructor() {
         this.script = document.getElementById('wp-banners-script');
+        this.id     = this.script.getAttribute('data-id');
         this.siteId = this.script.getAttribute('data-site-id');
-        this.version = '1';
 
-        /*********************************************************/
-        /*** TODO: This is only for testing. Remove when done. ***/
-
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
-
-        if (urlParams.has('site-id')) {
-            this.siteId = urlParams.get('site-id');
-        }
-
-        if (urlParams.has('banner-id')) {
-            let version = urlParams.get('version');
-
-            if ( version === '1' || version === '2' || version === '3' ) {
-                this.version = urlParams.get('version');
-            }
-        }
-
-        let url = 'http://ammulsubdomdev.local';
-
-        /*********************************************************/
-
-        let request    = new XMLHttpRequest(),
+        let url        = new URL(document.currentScript.src).origin,
+            request    = new XMLHttpRequest(),
             endpoint   = url + '/wp-json/rr/v1/wp-banner/',
-            requestURL = endpoint + '?site-id=' + this.siteId + '&version=' + this.version + '&t=' + Date.now();
+            requestURL = endpoint + '?id=' + this.id;
+
+        if ( this.siteId !== null ) {
+            requestURL += 'site-id=' + this.siteId;
+        }
 
         request.open('GET', requestURL);
         request.send();
         request.onload = () => {
             if (request.status === 200) {
-                console.log(request.response);
                 this.data = JSON.parse(request.response);
                 this.init();
             } else {

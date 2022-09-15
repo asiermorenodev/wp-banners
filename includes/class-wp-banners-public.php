@@ -21,7 +21,6 @@ class WPB_Public extends WPB_Core {
      * @access   private
      */
     public function register_hooks() {
-        error_log('WPB_Public: register_hooks');
         add_action( 'rest_api_init', array( $this, 'register_rest_route' ) );
     }
 
@@ -37,12 +36,8 @@ class WPB_Public extends WPB_Core {
     public function get_banner_data( \WP_REST_Request $request ){
         // TODO Sanitize and check errors.
 
-        $site_id = $request->get_param( 'site-id' );
-        $banner_id = $request->get_param( 'banner-id' );
-
-        if ( ! isset( $banner_id ) ) {
-            $banner_id = '5'; //TODO
-        }
+        $site_id   = sanitize_text_field( $request->get_param( 'site-id' ) );
+        $banner_id = sanitize_text_field( $request->get_param( 'id' ) );
 
         $site = get_site( $site_id );
 
